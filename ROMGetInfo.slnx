@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="ROMGetInfo/ROMGetInfo.csproj" Id="42b1a52c-d816-47b4-8b45-88b0423fbb9c" />
+  <Project Path="ROMIdentifier/ROMIdentifier.csproj" Id="987ebb92-7c2e-4b77-9676-a22afc9bc076" />
 </Solution>
