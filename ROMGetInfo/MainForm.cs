@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,6 +19,25 @@ namespace ROMGetInfo
             InitializeComponent();
         }
 
+        private void OpenFile(string path)
+        {
+            var results = RomFile.Identify(path, StatusBarCallback);
+            var best = results.GetBestResult();
+
+            // Setting values
+            filePath.Text = Path.GetFileName(results.Path);
+            filetypeBox.Text = $"{results.Filetype.Description} ({results.Filetype.Mime})";
+            
+            gameIdBox.Text = best.Details.TitleId;
+            titleBox.Text = best.Details.Title;
+            textBox1.Text = best.Scanner.FullName;
+
+            if (!best.Success)
+            {
+                gameIdBox.Text = "IT DID NOT WORK";
+                titleBox.Text = best.Message;
+            }
+        }
 
         private void StatusBarCallback(string status, int? percent)
         {
@@ -41,13 +61,7 @@ namespace ROMGetInfo
             if (file is null)
                 return;
 
-            UseWaitCursor = true;
-
-            var ident = RomFile.Identify(file, StatusBarCallback);
-
-            UseWaitCursor = false;
-
-            infoDump.Text = ident.TitleId;
+            OpenFile(file);
         }
 
         private void MainForm_DragEnter(object sender, DragEventArgs e)

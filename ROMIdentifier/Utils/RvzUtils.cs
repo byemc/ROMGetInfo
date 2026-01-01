@@ -21,11 +21,11 @@ namespace ROMIdentifier.Utils
             const string magic = "WIA\x1";
 
             // Get title-id
-            var id = WiiScanner.GetTitleIdFromStream(fs, 0x58);
+            //var id = WiiDiscScanner.GetTitleIdFromStream(fs, 0x58);
 
             fs.Dispose();
 
-            return id;
+            return "";
         }
     }
 }
