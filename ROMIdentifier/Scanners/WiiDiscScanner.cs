@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ROMIdentifier.Utils;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,6 +15,8 @@ namespace ROMIdentifier.Scanners
         public static ICollection<RomScanningResult> Scan(string path, Action<string, int?> callback)
         {
             var ext = Path.GetExtension(path);
+
+            callback("Scanning as Wii/GameCube disc", 0);
 
             var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
             int offset = 0x00;
@@ -42,13 +45,14 @@ namespace ROMIdentifier.Scanners
             fs.Read(wiiBuffer, 0x00, 0x04);
             if (BitConverter.IsLittleEndian)
                 Array.Reverse(wiiBuffer);
-            var wiiBufferUint = BitConverter.ToUInt32(wiiBuffer, 0x00);
 
             fs.Seek(offset, SeekOrigin.Begin);
             fs.Seek(0x01C, SeekOrigin.Current);
             byte[] gcBuffer = new byte[0x04];
             fs.Read(gcBuffer, 0x00, 0x04);
-            if (wiiBufferUint != wiiMagic &&
+            if (BitConverter.IsLittleEndian)
+                Array.Reverse(gcBuffer);
+            if (BitConverter.ToUInt32(wiiBuffer, 0x00) != wiiMagic &&
                 BitConverter.ToUInt32(gcBuffer, 0x00) != gamecubeMagic)
             {
                 // We do NOT have a Wii disc. ABORT!!
@@ -85,6 +89,12 @@ namespace ROMIdentifier.Scanners
                 },
                 Success = true
             });
+
+            callback("Identified as a Wii/GC disc..", 25);
+
+            results.Add(GameTDB.ScanWiiByGameId(gameId, callback));
+
+            callback("Grabbed from GameTDB.", 100);
 
             return results;
         }

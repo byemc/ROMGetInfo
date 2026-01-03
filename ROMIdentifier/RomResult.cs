@@ -20,7 +20,7 @@ namespace ROMIdentifier
             return Results
                 .OrderByDescending(r => r.Confidence)
                 .OrderByDescending(r => r.Success)
-                .First();
+                .FirstOrDefault();
         }
     }
 

@@ -28,10 +28,20 @@ namespace ROMIdentifier
 
             var results = new List<RomScanningResult>();
 
-            // Forcing to use Dolphin
-            results.AddRange( Scanners.WiiDiscScanner.Scan(path, callback) );
+            switch (fileMime)
+            {
+                case "application/x-wii-rom":
+                case "application/x-gamecube-rom":
+                    results.AddRange(Scanners.WiiDiscScanner.Scan(path, callback));
+                    break;
+            }
 
-            callback("Ready.", 100);
+            var failures = results.FindAll(x => x.Success == false);
+            var text = failures.Count == 1 ? "failure" : "failures";
+            if (failures.Count > 0)
+                callback($"Ready with {failures.Count} {text}.", 100);
+            else
+                callback("Ready.", 100);
 
             return new RomResult()
             {
